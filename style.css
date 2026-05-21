@@ -1,0 +1,328 @@
+:root{
+  --bg:#f7f6f2;
+  --card:#ffffff;
+  --border:#d8d8d8;
+  --text:#222;
+  --muted:#666;
+  --primary:#6f42c1;
+  --primary-soft:#efe8ff;
+  --student:#0f6c78;
+  --student-soft:#e7f2f3;
+  --danger:#b00020;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.hide{
+  display:none !important;
+}
+
+.block-space{
+  display:block;
+  margin-top:12px;
+}
+
+.full-btn{
+  margin-top:16px;
+  width:100%;
+}
+
+.section-gap{
+  margin-top:14px;
+}
+
+.wrap{
+  max-width:1200px;
+  margin:0 auto;
+  padding:24px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 8px 24px rgba(0,0,0,.06);
+  margin-bottom:18px;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:18px;
+}
+
+.subjects{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.subj{
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#fafafa;
+  display:block;
+}
+
+.subj small{
+  display:block;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+input[type=text],
+input[type=password],
+select{
+  width:100%;
+  padding:14px;
+  margin-top:6px;
+  border:1px solid #ccc;
+  border-radius:12px;
+  font-size:16px;
+}
+
+.btn,
+.btn2,
+.btn-danger{
+  border:none;
+  padding:12px 18px;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-block;
+}
+
+.btn{
+  background:var(--primary);
+  color:#fff;
+}
+
+.btn:hover{
+  opacity:.9;
+}
+
+.btn2{
+  background:#eee;
+  color:#111;
+}
+
+.btn2:hover{
+  background:#ddd;
+}
+
+.btn-danger{
+  background:var(--danger);
+  color:#fff;
+}
+
+.btn-danger:hover{
+  opacity:.9;
+}
+
+.small{
+  color:var(--muted);
+  font-size:.95rem;
+  line-height:1.6;
+}
+
+.note{
+  color:#555;
+  line-height:1.7;
+}
+
+.flash{
+  color:var(--danger);
+  font-weight:700;
+  margin-top:12px;
+}
+
+.result{
+  position:sticky;
+  top:18px;
+}
+
+.pill{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  background:var(--student-soft);
+  margin:4px 6px 0 0;
+}
+
+.tablewrap{
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,
+td{
+  border:1px solid var(--border);
+  padding:8px;
+  text-align:left;
+  vertical-align:top;
+}
+
+th{
+  background:#f3efff;
+}
+
+.portal{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.login-card{
+  width:100%;
+  max-width:520px;
+}
+
+.role-box{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:14px 0 18px;
+}
+
+.role-btn{
+  padding:14px;
+  border-radius:12px;
+  border:2px solid #ddd;
+  background:#fafafa;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.role-btn.active-admin{
+  border-color:var(--primary);
+  background:#f3efff;
+  color:var(--primary);
+}
+
+.role-btn.active-student{
+  border-color:var(--student);
+  background:var(--student-soft);
+  color:var(--student);
+}
+
+.scale-card{
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:#fafafa;
+  margin:12px 0;
+}
+
+.scale-title{
+  font-size:1.02rem;
+  margin-bottom:18px;
+  line-height:1.5;
+}
+
+.scale-row{
+  display:grid;
+  grid-template-columns:80px repeat(5,1fr) 80px;
+  align-items:center;
+  gap:8px;
+  text-align:center;
+}
+
+.scale-row .left,
+.scale-row .right{
+  font-size:.95rem;
+  color:#444;
+}
+
+.scale-row .num{
+  font-size:.95rem;
+  color:#333;
+}
+
+.scale-row input[type=radio]{
+  width:20px;
+  height:20px;
+  margin:0 auto;
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:.85rem;
+  font-weight:700;
+}
+
+.badge-admin{
+  background:#f3efff;
+  color:var(--primary);
+}
+
+.badge-student{
+  background:var(--student-soft);
+  color:var(--student);
+}
+
+.action-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.delete-btn{
+  padding:8px 12px;
+  border:none;
+  border-radius:10px;
+  background:var(--danger);
+  color:#fff;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.delete-btn:hover{
+  opacity:.9;
+}
+
+@media(max-width:900px){
+
+  .grid,
+  .subjects{
+    grid-template-columns:1fr;
+  }
+
+  .top{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .scale-row{
+    grid-template-columns:1fr repeat(5,40px) 1fr;
+    gap:6px;
+  }
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Career & FYP Recommendation System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="loginPage" class="portal">
+    <div class="card login-card">
+      <h1>Login Portal</h1>
+      <p class="small">Only logged-in users can access the recommendation system.</p>
+
+      <div class="role-box">
+        <button id="roleAdminBtn" class="role-btn active-admin" type="button" onclick="setRole('admin')">Admin</button>
+        <button id="roleStudentBtn" class="role-btn" type="button" onclick="setRole('student')">Student</button>
+      </div>
+
+      <div class="small">
+        Admin demo: <strong>admin</strong> / <strong>admin123</strong><br>
+        Student demo: <strong>student</strong> / <strong>student123</strong>
+      </div>
+
+      <label class="block-space">Username</label>
+      <input id="loginUser" type="text" placeholder="Enter username" />
+
+      <label class="block-space">Password</label>
+      <input id="loginPass" type="password" placeholder="Enter password" />
+
+      <button id="loginBtn" class="btn full-btn" onclick="doLogin()">Login</button>
+      <div id="loginMsg" class="flash"></div>
+    </div>
+  </div>
+
+  <div id="appPage" class="hide">
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <h1>Student Career & FYP Recommendation System</h1>
+          <div class="small">
+            <span id="roleBadge"></span>
+            This system collects background information, completed coursework, and interest profiles to generate career and FYP recommendations.
+          </div>
+        </div>
+
+        <div>
+          <button id="savedBtn" class="btn2" onclick="viewSaved()">View saved data</button>
+          <button class="btn2" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Student Form</h2>
+          <p class="note">
+            Please complete the form below. Select the subjects that you have already taken and answer the interest section based on your personal preference.
+            The interest section uses a 1 to 5 scale, where 1 means <strong>Don't like</strong> and 5 means <strong>Love it</strong>.
+          </p>
+
+          <form id="mainForm" onsubmit="return false;">
+            <div class="card">
+              <label>Matric number</label>
+              <input id="matricNumber" type="text" required placeholder="Enter matric number" />
+
+              <label class="block-space">Year of study</label>
+              <select id="yearOfStudy">
+                <option>Year 2</option>
+                <option>Year 3</option>
+              </select>
+            </div>
+
+            <div class="card">
+              <h3>Section 2: Year 2 Subjects</h3>
+              <p class="small">
+                Please indicate which subjects you have already taken from the list below.
+              </p>
+              <div class="subjects" id="year2Box"></div>
+            </div>
+
+            <div class="card">
+              <h3>Section 3: Year 3 Subjects</h3>
+              <p class="small">
+                Please indicate which subjects you have already taken from the list below.
+              </p>
+              <div class="subjects" id="year3Box"></div>
+            </div>
+
+            <div class="card">
+              <h3>Section 4: Interest Profile</h3>
+              <p class="small">
+                Please indicate your level of interest for each statement below using the scale from 1 to 5.
+              </p>
+              <div id="interestBox"></div>
+            </div>
+
+            <button class="btn" type="button" onclick="generateAndSave()">Generate and save</button>
+            <button class="btn2" type="button" onclick="fillSample()">Fill sample data</button>
+            <button class="btn2" type="button" onclick="resetForm()">Reset</button>
+          </form>
+        </div>
+
+        <div class="card result">
+          <h2>Result</h2>
+          <div id="resultText" class="small">
+            Submit the form to generate a recommendation and save it in Supabase database.
+          </div>
+
+          <div class="section-gap">
+            <strong>Selected subjects</strong>
+            <div id="selectedPills"></div>
+          </div>
+
+          <div class="section-gap">
+            <strong>Saved records</strong>
+            <div id="savedCount">0 records</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="savedPage" class="hide card"></div>
+    </div>
+  </div>
+
+  <!-- Supabase JavaScript Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Your JavaScript File -->
+  <script src="script.js"></script>
+
+</body>
+</html>
