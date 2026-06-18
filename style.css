@@ -310,7 +310,6 @@ th{
 }
 
 @media(max-width:900px){
-
   .grid,
   .subjects{
     grid-template-columns:1fr;
