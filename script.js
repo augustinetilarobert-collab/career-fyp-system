@@ -91,11 +91,7 @@ async function loadData() {
   return data;
 }
 
-// ==========================================
-// KOD YANG DIUBAH: Memperbaiki isu JSONB parsing
-// ==========================================
 async function saveData(entry) {
-  // Tukar Array dan Object menjadi Teks String JSON yang sah sebelum dihantar ke kolum jsonb
   const formattedEntry = {
     ...entry,
     selected_subjects: JSON.stringify(entry.selected_subjects),
@@ -135,7 +131,7 @@ async function deleteAllRecords() {
   const { error } = await supabaseClient
     .from("career_fyp_records")
     .delete()
-    .neq("id", 0); // Memadam semua id yang bukan 0
+    .neq("id", 0);
 
   if (error) {
     alert("Clear database failed: " + error.message);
@@ -192,20 +188,37 @@ function logout() {
   document.getElementById('loginMsg').innerText = '';
 }
 
+// =========================================================================
+// KOD YANG DIUBAH: Memaksa gaya grid kotak (Card) melalui inline CSS
+// =========================================================================
 function buildForm() {
+  // Gaya CSS untuk kontena grid
+  const gridStyle = "display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; padding: 10px 0;";
+  
+  // Gaya CSS untuk setiap kotak subjek (Card)
+  const cardStyle = "display: flex; align-items: flex-start; gap: 12px; background: #fdfdfd; border: 1px solid #e0e0e0; padding: 15px; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);";
+
   const y2Box = document.getElementById('year2Box');
+  y2Box.style.cssText = gridStyle;
   y2Box.innerHTML = year2.map((s, idx) => `
-    <label class="subject-item">
-      <input type="checkbox" data-subject="${s[0]}" id="y2_${idx}" />
-      <span><strong>${s[0]}</strong> - ${s[1]}</span>
+    <label class="subject-item" style="${cardStyle}">
+      <input type="checkbox" data-subject="${s[0]}" id="y2_${idx}" style="margin-top: 4px; transform: scale(1.1);" />
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-weight: bold; color: #333; font-size: 1rem;">${s[0]}</span>
+        <span style="color: #666; font-size: 0.85rem; line-height: 1.3;">${s[1]}</span>
+      </div>
     </label>
   `).join('');
 
   const y3Box = document.getElementById('year3Box');
+  y3Box.style.cssText = gridStyle;
   y3Box.innerHTML = year3.map((s, idx) => `
-    <label class="subject-item">
-      <input type="checkbox" data-subject="${s[0]}" id="y3_${idx}" />
-      <span><strong>${s[0]}</strong> - ${s[1]}</span>
+    <label class="subject-item" style="${cardStyle}">
+      <input type="checkbox" data-subject="${s[0]}" id="y3_${idx}" style="margin-top: 4px; transform: scale(1.1);" />
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-weight: bold; color: #333; font-size: 1rem;">${s[0]}</span>
+        <span style="color: #666; font-size: 0.85rem; line-height: 1.3;">${s[1]}</span>
+      </div>
     </label>
   `).join('');
 
@@ -363,7 +376,6 @@ async function viewSaved() {
     let t = '';
     try { t = new Date(r.created_at).toLocaleString(); } catch (e) { t = r.created_at; }
     
-    // KOD YANG DIUBAH: Mengendalikan pembacaan semula data jenis String JSON atau Array asal
     let displaySubjects = '';
     if (r.selected_subjects) {
       if (typeof r.selected_subjects === 'string') {
