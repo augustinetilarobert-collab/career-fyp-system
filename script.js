@@ -74,75 +74,55 @@ const subjectMap = {
 
 function setRole(role){
   currentRole = role;
-
-  document.getElementById('roleAdminBtn').className =
-    'role-btn' + (role === 'admin' ? ' active-admin' : '');
-
-  document.getElementById('roleStudentBtn').className =
-    'role-btn' + (role === 'student' ? ' active-student' : '');
+  document.getElementById('roleAdminBtn').className = 'role-btn' + (role === 'admin' ? ' active-admin' : '');
+  document.getElementById('roleStudentBtn').className = 'role-btn' + (role === 'student' ? ' active-student' : '');
 }
 
 async function loadData(){
-
   const { data, error } = await supabaseClient
     .from("career_fyp_records")
     .select("*")
     .order("created_at", { ascending: false });
 
   if(error){
-    console.error(error);
+    console.error("Fetch error:", error);
     return [];
   }
-
   return data;
 }
 
+/* KOD YANG DIUBAH: Penambahan pengesanan ralat Supabase yang terperinci */
 async function saveData(entry){
-
-  const { error } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from("career_fyp_records")
     .insert([entry]);
 
   if(error){
-    console.error(error);
-    alert("Failed to save data.");
+    console.error("Supabase Error Details:", error.message, error.details, error.hint);
+    alert(`Failed to save data.\nError Message: ${error.message}\nHint: ${error.hint || 'Check RLS or Table schema'}`);
     return false;
   }
-
   return true;
 }
 
 function getValues(){
-
-  const selected =
-    [...document.querySelectorAll('[data-subject]:checked')]
-    .map(x => x.dataset.subject);
-
+  const selected = [...document.querySelectorAll('[data-subject]:checked')].map(x => x.dataset.subject);
   const scores = {};
 
   interests.forEach((text, index) => {
-
-    const checked =
-      document.querySelector(`input[name="interest_${index}"]:checked`);
-
-    scores['interest_' + index] =
-      checked ? Number(checked.value) : 0;
+    const checked = document.querySelector(`input[name="interest_${index}"]:checked`);
+    scores['interest_' + index] = checked ? Number(checked.value) : 0;
   });
 
   return { selected, scores };
 }
 
 function renderPills(selected){
-
   document.getElementById('selectedPills').innerHTML =
-    selected.map(s =>
-      `<span class="pill">${s}</span>`
-    ).join('')
-    || '<div class="small">None selected</div>';
+    selected.map(s => `<span class="pill">${s}</span>`).join('') || '<div class="small">None selected</div>';
 }
 
 function scoreRecommend(selected, scores){
-
   const career = {};
   const fyp = {};
 
@@ -152,86 +132,55 @@ function scoreRecommend(selected, scores){
   });
 
   selected.forEach(code => {
-
     if(subjectMap[code]){
-
       career[subjectMap[code][0]] += 3;
       fyp[subjectMap[code][1]] += 3;
     }
   });
 
   if(scores.interest_0 >= 4){
-
     career['AI / ML Engineer'] += 4;
     career['AI / Knowledge Engineer'] += 3;
     career['Computational Intelligence Analyst'] += 3;
-
     fyp['Artificial Intelligence Applications'] += 4;
     fyp['Knowledge-Based Systems'] += 3;
   }
-
   if(scores.interest_1 >= 4){
-
     career['Data Analyst'] += 4;
     career['Database Developer'] += 3;
-
     fyp['Data Mining & Analytics'] += 4;
     fyp['Database & Information Systems'] += 3;
   }
-
   if(scores.interest_2 >= 4){
-
     career['Web Developer'] += 4;
     career['Mobile App Developer'] += 3;
-
     fyp['Web-Based Intelligent Systems'] += 4;
     fyp['Mobile Intelligent Applications'] += 3;
   }
-
   if(scores.interest_3 >= 4){
-
     career['XR / VR Developer'] += 4;
     career['Computer Vision Engineer'] += 3;
     career['Graphics Developer'] += 3;
-
     fyp['Virtual Reality Applications'] += 4;
     fyp['Computer Vision Applications'] += 3;
     fyp['Computer Graphics'] += 3;
   }
-
   if(scores.interest_4 >= 4){
-
     career['NLP / Language Technology Researcher'] += 4;
     career['Text Analytics Specialist'] += 3;
-
     fyp['Natural Language Processing'] += 4;
   }
-
   if(scores.interest_5 >= 4){
-
     career['Learning Technology Specialist'] += 4;
     career['Inclusive Learning Technology Specialist'] += 3;
-
     fyp['Educational Technology Systems'] += 4;
     fyp['Inclusive Education Technology'] += 4;
   }
 
-  const topCareer =
-    Object.entries(career)
-    .sort((a,b) => b[1] - a[1])[0];
+  const topCareer = Object.entries(career).sort((a,b) => b[1] - a[1])[0];
+  const topFyp = Object.entries(fyp).sort((a,b) => b[1] - a[1])[0];
 
-  const topFyp =
-    Object.entries(fyp)
-    .sort((a,b) => b[1] - a[1])[0];
-
-  const confidence =
-    Math.min(
-      95,
-      Math.max(
-        40,
-        topCareer[1] * 8 + topFyp[1] * 6
-      )
-    );
+  const confidence = Math.min(95, Math.max(40, topCareer[1] * 8 + topFyp[1] * 6));
 
   return {
     career: topCareer[0],
@@ -241,34 +190,22 @@ function scoreRecommend(selected, scores){
 }
 
 async function renderSavedCount(){
-
   const data = await loadData();
-
-  document.getElementById('savedCount').textContent =
-    data.length + ' records';
+  document.getElementById('savedCount').textContent = data.length + ' records';
 }
 
 async function generateAndSave(){
-
-  const matric_number =
-    document.getElementById('matricNumber').value.trim();
-
-  const year_of_study =
-    document.getElementById('yearOfStudy').value;
-
+  const matric_number = document.getElementById('matricNumber').value.trim();
+  const year_of_study = document.getElementById('yearOfStudy').value;
   const { selected, scores } = getValues();
 
   if(!matric_number){
-
     alert('Please enter matric number.');
     return;
   }
 
-  const unanswered =
-    Object.values(scores).filter(v => v === 0).length;
-
+  const unanswered = Object.values(scores).filter(v => v === 0).length;
   if(unanswered > 0){
-
     alert('Please answer all interest questions.');
     return;
   }
@@ -287,10 +224,7 @@ async function generateAndSave(){
   };
 
   const saved = await saveData(entry);
-
-  if(!saved){
-    return;
-  }
+  if(!saved) return;
 
   document.getElementById('resultText').innerHTML = `
     <p><strong>Career:</strong> ${rec.career}</p>
@@ -300,35 +234,21 @@ async function generateAndSave(){
   `;
 
   renderPills(selected);
-
   await renderSavedCount();
 }
 
 function fillSample(){
-
   document.getElementById('matricNumber').value = '78901';
-
   document.getElementById('yearOfStudy').value = 'Year 3';
+  document.querySelectorAll('[data-subject]').forEach(el => el.checked = false);
 
-  document.querySelectorAll('[data-subject]')
-    .forEach(el => el.checked = false);
-
-  ['KMK2233','KMK2533','KMK2263','KMK3393']
-    .forEach(code => {
-
-      const el =
-        document.querySelector(`[data-subject="${code}"]`);
-
-      if(el) el.checked = true;
-    });
+  ['KMK2233','KMK2533','KMK2263','KMK3393'].forEach(code => {
+    const el = document.querySelector(`[data-subject="${code}"]`);
+    if(el) el.checked = true;
+  });
 
   [5,4,4,3,3,2].forEach((v,i) => {
-
-    const radio =
-      document.querySelector(
-        `input[name="interest_${i}"][value="${v}"]`
-      );
-
+    const radio = document.querySelector(`input[name="interest_${i}"][value="${v}"]`);
     if(radio) radio.checked = true;
   });
 
@@ -336,176 +256,110 @@ function fillSample(){
 }
 
 function resetForm(){
-
   document.getElementById('mainForm').reset();
-
-  document.getElementById('resultText').textContent =
-    'Submit the form to generate recommendation.';
-
+  document.getElementById('resultText').textContent = 'Submit the form to generate recommendation.';
   document.getElementById('selectedPills').innerHTML = '';
 }
 
 function buildForm(){
+  document.getElementById('year2Box').innerHTML = year2.map(([c,n]) =>
+    `<label class="subj">
+      <input type="checkbox" data-subject="${c}">
+      <strong>${c}</strong>
+      <small>${n}</small>
+    </label>`
+  ).join('');
 
-  document.getElementById('year2Box').innerHTML =
-    year2.map(([c,n]) =>
-      `<label class="subj">
-        <input type="checkbox" data-subject="${c}">
-        <strong>${c}</strong>
-        <small>${n}</small>
-      </label>`
-    ).join('');
+  document.getElementById('year3Box').innerHTML = year3.map(([c,n]) =>
+    `<label class="subj">
+      <input type="checkbox" data-subject="${c}">
+      <strong>${c}</strong>
+      <small>${n}</small>
+    </label>`
+  ).join('');
 
-  document.getElementById('year3Box').innerHTML =
-    year3.map(([c,n]) =>
-      `<label class="subj">
-        <input type="checkbox" data-subject="${c}">
-        <strong>${c}</strong>
-        <small>${n}</small>
-      </label>`
-    ).join('');
-
-  document.getElementById('interestBox').innerHTML =
-    interests.map((text, index) => `
-      <div class="scale-card">
-        <div class="scale-title">${text}</div>
-
-        <div class="scale-row">
-
-          <div class="left">Don't like</div>
-
-          <div class="num">1</div>
-          <div class="num">2</div>
-          <div class="num">3</div>
-          <div class="num">4</div>
-          <div class="num">5</div>
-
-          <div class="right">Love it</div>
-
-          <div></div>
-
-          <label><input type="radio" name="interest_${index}" value="1"></label>
-          <label><input type="radio" name="interest_${index}" value="2"></label>
-          <label><input type="radio" name="interest_${index}" value="3"></label>
-          <label><input type="radio" name="interest_${index}" value="4"></label>
-          <label><input type="radio" name="interest_${index}" value="5"></label>
-
-          <div></div>
-
-        </div>
+  document.getElementById('interestBox').innerHTML = interests.map((text, index) => `
+    <div class="scale-card">
+      <div class="scale-title">${text}</div>
+      <div class="scale-row">
+        <div class="left">Don't like</div>
+        <div class="num">1</div>
+        <div class="num">2</div>
+        <div class="num">3</div>
+        <div class="num">4</div>
+        <div class="num">5</div>
+        <div class="right">Love it</div>
+        <div></div>
+        <label><input type="radio" name="interest_${index}" value="1"></label>
+        <label><input type="radio" name="interest_${index}" value="2"></label>
+        <label><input type="radio" name="interest_${index}" value="3"></label>
+        <label><input type="radio" name="interest_${index}" value="4"></label>
+        <label><input type="radio" name="interest_${index}" value="5"></label>
+        <div></div>
       </div>
-    `).join('');
+    </div>
+  `).join('');
 
-  document.querySelectorAll('[data-subject]')
-    .forEach(box => {
-
-      box.addEventListener('change', () => {
-        renderPills(getValues().selected);
-      });
+  document.querySelectorAll('[data-subject]').forEach(box => {
+    box.addEventListener('change', () => {
+      renderPills(getValues().selected);
     });
+  });
 }
 
 function showApp(){
+  document.getElementById('loginPage').classList.add('hide');
+  document.getElementById('appPage').classList.remove('hide');
 
-  document.getElementById('loginPage')
-    .classList.add('hide');
-
-  document.getElementById('appPage')
-    .classList.remove('hide');
-
-  const roleBadge =
-    document.getElementById('roleBadge');
-
-  const savedBtn =
-    document.getElementById('savedBtn');
+  const roleBadge = document.getElementById('roleBadge');
+  const savedBtn = document.getElementById('savedBtn');
 
   if(currentRole === 'admin'){
-
     roleBadge.className = 'badge badge-admin';
     roleBadge.textContent = 'Admin';
-
     savedBtn.style.display = 'inline-block';
-
   } else {
-
     roleBadge.className = 'badge badge-student';
     roleBadge.textContent = 'Student';
-
     savedBtn.style.display = 'none';
   }
 }
 
 function showLogin(){
-
-  document.getElementById('appPage')
-    .classList.add('hide');
-
-  document.getElementById('loginPage')
-    .classList.remove('hide');
+  document.getElementById('appPage').classList.add('hide');
+  document.getElementById('loginPage').classList.remove('hide');
 }
 
 function doLogin(){
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value.trim();
 
-  const u =
-    document.getElementById('loginUser').value.trim();
-
-  const p =
-    document.getElementById('loginPass').value.trim();
-
-  const adminValid =
-    currentRole === 'admin'
-    && u === ADMIN_USERNAME
-    && p === ADMIN_PASSWORD;
-
-  const studentValid =
-    currentRole === 'student'
-    && u === STUDENT_USERNAME
-    && p === STUDENT_PASSWORD;
+  const adminValid = currentRole === 'admin' && u === ADMIN_USERNAME && p === ADMIN_PASSWORD;
+  const studentValid = currentRole === 'student' && u === STUDENT_USERNAME && p === STUDENT_PASSWORD;
 
   if(adminValid || studentValid){
-
-    sessionStorage.setItem(
-      'careerFypLoggedIn',
-      '1'
-    );
-
-    sessionStorage.setItem(
-      'careerFypRole',
-      currentRole
-    );
+    sessionStorage.setItem('careerFypLoggedIn', '1');
+    sessionStorage.setItem('careerFypRole', currentRole);
 
     buildForm();
-
     showApp();
-
     renderSavedCount();
-
     document.getElementById('loginMsg').textContent = '';
-
   } else {
-
-    document.getElementById('loginMsg').textContent =
-      'Invalid username or password.';
+    document.getElementById('loginMsg').textContent = 'Invalid username or password.';
   }
 }
 
 function logout(){
-
   sessionStorage.removeItem('careerFypLoggedIn');
-
   sessionStorage.removeItem('careerFypRole');
-
   showLogin();
-
   document.getElementById('loginUser').value = '';
   document.getElementById('loginPass').value = '';
 }
 
 async function deleteRecord(id){
-
-  const confirmDelete =
-    confirm('Delete this record?');
-
+  const confirmDelete = confirm('Delete this record?');
   if(!confirmDelete) return;
 
   const { error } = await supabaseClient
@@ -514,95 +368,62 @@ async function deleteRecord(id){
     .eq("id", id);
 
   if(error){
-
     console.error(error);
-
     alert("Failed to delete.");
     return;
   }
-
   await renderSavedCount();
-
   await viewSaved();
 }
 
+/* KOD YANG DIUBAH: Pembaikan syarat penapisan untuk keserasian jadual SQL */
 async function deleteAllRecords(){
-
-  const confirmDelete =
-    confirm('Delete all records?');
-
+  const confirmDelete = confirm('Delete all records?');
   if(!confirmDelete) return;
 
   const { error } = await supabaseClient
     .from("career_fyp_records")
     .delete()
-    .neq("id", 0);
+    .neq("matric_number", ""); 
 
   if(error){
-
     console.error(error);
-
     alert("Failed to delete all.");
     return;
   }
-
   await renderSavedCount();
-
   await viewSaved();
 }
 
 async function viewSaved(){
-
   const data = await loadData();
+  const rows = data.map((r) => `
+    <tr>
+      <td>${r.created_at || ''}</td>
+      <td>${r.role}</td>
+      <td>${r.matric_number}</td>
+      <td>${r.year_of_study}</td>
+      <td>${Array.isArray(r.selected_subjects) ? r.selected_subjects.join(', ') : r.selected_subjects}</td>
+      <td>${r.career}</td>
+      <td>${r.fyp}</td>
+      <td>${r.confidence}%</td>
+      <td>
+        <button class="delete-btn" onclick="deleteRecord(${r.id})">Delete</button>
+      </td>
+    </tr>
+  `).join('');
 
-  const rows =
-    data.map((r) => `
-      <tr>
-        <td>${r.created_at}</td>
-        <td>${r.role}</td>
-        <td>${r.matric_number}</td>
-        <td>${r.year_of_study}</td>
-        <td>${r.selected_subjects.join(', ')}</td>
-        <td>${r.career}</td>
-        <td>${r.fyp}</td>
-        <td>${r.confidence}%</td>
-
-        <td>
-          <button class="delete-btn"
-            onclick="deleteRecord(${r.id})">
-            Delete
-          </button>
-        </td>
-      </tr>
-    `).join('');
-
-  const box =
-    document.getElementById('savedPage');
-
+  const box = document.getElementById('savedPage');
   box.innerHTML = `
     <div class="top">
-
       <h2>Saved Data</h2>
-
       <div class="action-row">
-
-        <button class="btn-danger"
-          onclick="deleteAllRecords()">
-          Delete All
-        </button>
-
-        <button class="btn2"
-          onclick="hideSaved()">
-          Close
-        </button>
-
+        <button class="btn-danger" onclick="deleteAllRecords()">Delete All</button>
+        <button class="btn2" onclick="hideSaved()">Close</button>
       </div>
     </div>
-
     <div class="tablewrap">
-
       <table>
-
         <thead>
           <tr>
             <th>Time</th>
@@ -616,45 +437,29 @@ async function viewSaved(){
             <th>Action</th>
           </tr>
         </thead>
-
         <tbody>
           ${rows}
         </tbody>
-
       </table>
-
     </div>
   `;
-
   box.classList.remove('hide');
 }
 
 function hideSaved(){
-
-  document.getElementById('savedPage')
-    .classList.add('hide');
+  document.getElementById('savedPage').classList.add('hide');
 }
 
 window.onload = function(){
-
-  const loggedIn =
-    sessionStorage.getItem('careerFypLoggedIn');
-
-  const role =
-    sessionStorage.getItem('careerFypRole');
+  const loggedIn = sessionStorage.getItem('careerFypLoggedIn');
+  const role = sessionStorage.getItem('careerFypRole');
 
   if(loggedIn === '1' && role){
-
     currentRole = role;
-
     buildForm();
-
     showApp();
-
     renderSavedCount();
-
   } else {
-
     showLogin();
   }
 };
